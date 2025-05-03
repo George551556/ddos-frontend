@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { Ping, queryServerClock } from './service/service';
+import DeviceList from './components/device-list';
+import {
+  Ping,
+  queryServerClock,
+  queryDevices,
+} from './service/service';
 import { Input, Button, Select, Space, message, Modal, Col, Row, Spin, } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 function App() {
   const [serverClock, setServerClock] = useState('xx:xx:xx');
+  const [devices, setDevices] = useState([]);
+  const [deviceNums, setDeviceNums] = useState(0);
   
 
   // 页面加载后获取数据等操作
@@ -23,8 +30,13 @@ function App() {
       }).catch(err => {
         console.log(err);
       });
+    }, 2000);
 
-    }, 1000);
+    // 获取设备列表
+    queryDevices().then(res => {
+      setDevices(res.data.data);
+      setDeviceNums(res.data.deviceNums);
+    })
 
     return () => {
       // 组件销毁时清除定时器
@@ -36,12 +48,12 @@ function App() {
     <div className="App">
       <div style={{height: '10px'}}></div>
         <Space direction='horizontal'>
-          <p>顶部控制栏</p>
-          <Input value={serverClock} prefix={<ClockCircleOutlined />} style={{width: '105px'}}/>
+          {/* 顶部控制栏 */}
+          <Input value={serverClock} prefix={<ClockCircleOutlined />} className='Top-clock'/>
           <Button type="primary" size='large'>Primary</Button>
           <Button size='large'>Default</Button>
         </Space>
-        <div style={{height: '20px'}}></div>
+        <div style={{height: '50px'}}></div>
         <Row>
           {/* 左下 控制表单 */}
           <Col span={1}></Col>
@@ -59,12 +71,9 @@ function App() {
 
           {/* 右下 设备列表 */}
           <Col span={14} style={{}}>
-            <Space direction='vertical' align='center'>
-              <div>
-                <Spin size='large'></Spin>
-                <div style={{color: 'blue', marginTop: '2px'}}>loading...</div>
-              </div>
-            </Space>
+            <div>
+              <DeviceList data={devices} deviceNums={deviceNums} />
+            </div>
           </Col>
         </Row>
     </div>

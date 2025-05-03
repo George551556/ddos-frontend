@@ -7,3 +7,7 @@ export const Ping = async () => {
 export const queryServerClock  = async () => {
     return await axios.get('/front/clock');
 }
+
+export const queryDevices = async () => {
+    return await axios.get('/front/queryDevices');
+}

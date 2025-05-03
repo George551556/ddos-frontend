@@ -37,6 +37,13 @@
   }
 }
 
+.Top-clock {
+  position: fixed;
+  width: 125px;
+  font-size: 18px;
+  top: 0;
+  left: 0;
+}
 
 .Left_bottom_container {
   width: 90%;
