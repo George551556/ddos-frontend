@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+
+.Left_bottom_container {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* 垂直靠下 */
+  align-items: center;
+  gap: 4px;
+}
