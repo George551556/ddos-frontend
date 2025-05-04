@@ -28,3 +28,7 @@ export const switchDeviceAll = async (isWorking, deviceID) => {
         device_id: deviceID
     });
 }
+
+export const getDefaultRequestBashText = async () => {
+    return await axios.get('/front/getDefaultRequestBashText');
+}
