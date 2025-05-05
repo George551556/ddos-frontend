@@ -49,7 +49,6 @@ const DeviceList = ({ data = [], deviceNums = 0, message = '' }) => {
                     type="circle"
                     percent={device.finish_rate}
                     width={50}
-                    size="small"
                   />
                 </span>
                 <span>平均延迟：{device.avg_delay} ms</span>

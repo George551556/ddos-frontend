@@ -9,6 +9,8 @@ import {
   startTaskAll,
   switchDeviceAll,
   getDefaultRequestBashText,
+  request_bash_text,
+  singleAttack,
 } from './service/service';
 import { Input, Button, Select, Space, message, Modal, Col, Row, Spin, } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
@@ -23,6 +25,10 @@ function App() {
   const [totalRequestNums, setTotalRequestNums] = useState(1000);
   const [usingThreadsNums, setUsingThreadsNums] = useState(5);
   const [timeConstraint, setTimeConstraint] = useState(2);
+
+  const [singleBtnLoading, setSingleBtnLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalContent, setModalContent] = useState('');
   
 
   // 页面加载后获取数据等操作
@@ -64,9 +70,18 @@ function App() {
     }
   }, [])
 
+  // 顶部启停按钮
+  const handleSwitchDevicaAll = (isWorking) => {
+    switchDeviceAll(isWorking, '').then(res => {
+      message.success('操作成功');
+    }).catch(err => {
+      message.error('操作失败');
+      console.log(err);
+    });
+  }
+
   // 提交表单
   const handleStartTaskAll = () => {
-    message.info('请求发送中...')
     startTaskAll(requestBashText, totalRequestNums, usingThreadsNums, timeConstraint).then(res => {
       message.success('请求发送成功');
     }).catch(err => {
@@ -88,6 +103,19 @@ function App() {
     setTimeConstraint(2);
   }
 
+  // 单次测试目标
+  const handleSingleAttack = () => {
+    setSingleBtnLoading(true);
+    singleAttack(requestBashText).then(res => {
+      // 打开一个全局提示框显示响应内容
+      setModalContent('单次测试结果\n状 态 码: ' + res.data.status_code + '\n响应时间: ' + res.data.delay_time + ' ms\n响应内容: \n' + res.data.resp_body)
+      setOpenModal(true);
+    }).catch(err => {
+      message.error('请求发送失败', err);
+    })
+    setSingleBtnLoading(false);
+  }
+
   return (
     <Router basename="/appa">
       <div className="App">
@@ -95,12 +123,12 @@ function App() {
           <Space direction='horizontal'>
             {/* 顶部控制栏 */}
             <Input value={serverClock} prefix={<ClockCircleOutlined />} className='Top-clock' style={{backgroundColor: connected? 'transparent':'red'}}/>
-            <Button type="primary" size='large' onClick={() => {switchDeviceAll(true, '')}}>启动所有设备</Button>
-            <Button size='large' onClick={() => {switchDeviceAll(false, '')}}>停止所有设备</Button>
+            <Button type="primary" size='large' onClick={()=>{handleSwitchDevicaAll(true)}}>启动所有设备</Button>
+            <Button size='large' onClick={()=>{handleSwitchDevicaAll(false)}}>停止所有设备</Button>
           </Space>
           <div style={{height: '20px'}}></div>
           <div style={{display: 'flex', justifyContent: 'center'}}>
-            <div style={{width: '96%', height: '5px', backgroundColor: '#eee', marginBottom: '20px'}}></div>
+            <div style={{width: '96%', height: '9px', backgroundColor: '#eee', marginBottom: '20px', borderRadius: '50px'}}></div>
           </div>
           <Row>
             {/* 左下 控制表单 */}
@@ -114,6 +142,7 @@ function App() {
                 <Space direction='horizontal'>
                   <Button type='primary' onClick={handleStartTaskAll} >提交</Button>
                   <Button onClick={handleBtnClear} >重置</Button>
+                  <Button onClick={handleSingleAttack} loading={singleBtnLoading} style={{backgroundColor: '#5f8'}}>单次访问测试</Button>
                 </Space>
 
               </div>
@@ -126,6 +155,21 @@ function App() {
               </div>
             </Col>
           </Row>
+
+          {/* modal提示框 */}
+          <Modal 
+            title=""
+            footer={
+              <Button onClick={()=>{setOpenModal(false)}}>确定</Button>
+            }
+            open={openModal}
+          >
+            <div>
+              {modalContent.split('\n').map((line, index) => (
+                <p key={index}>{line}</p>
+              ))}
+            </div>
+          </Modal>
       </div>
     </Router>
   );

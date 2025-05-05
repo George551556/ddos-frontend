@@ -33,3 +33,9 @@ export const switchDeviceAll = async (isWorking, deviceID) => {
 export const getDefaultRequestBashText = async () => {
     return await axios.get('/front/getDefaultRequestBashText');
 }
+
+export const singleAttack = async (reqBashText) => {
+    return await axios.post('/front/singleAttack', {
+        request_bash_text: reqBashText
+    })
+}
