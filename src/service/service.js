@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+axios.defaults.baseURL = 'http://127.0.0.1:55155';
 export const Ping = async () => {
     return await axios.get('/front/ping');
 }
