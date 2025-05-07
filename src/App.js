@@ -22,9 +22,9 @@ function App() {
   const [devices, setDevices] = useState([]);
   const [deviceNums, setDeviceNums] = useState(0);
   const [requestBashText, setRequestBashText] = useState('');
-  const [totalRequestNums, setTotalRequestNums] = useState(1000);
-  const [usingThreadsNums, setUsingThreadsNums] = useState(5);
-  const [timeConstraint, setTimeConstraint] = useState(2);
+  const [totalRequestNums, setTotalRequestNums] = useState(5000);
+  const [usingThreadsNums, setUsingThreadsNums] = useState(10);
+  const [timeConstraint, setTimeConstraint] = useState(5);
 
   const [singleBtnLoading, setSingleBtnLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -110,10 +110,11 @@ function App() {
       // 打开一个全局提示框显示响应内容
       setModalContent('单次测试结果\n状 态 码: ' + res.data.status_code + '\n响应时间: ' + res.data.delay_time + ' ms\n响应内容: \n' + res.data.resp_body)
       setOpenModal(true);
+      setSingleBtnLoading(false);
     }).catch(err => {
       message.error('请求发送失败', err);
+      setSingleBtnLoading(false);
     })
-    setSingleBtnLoading(false);
   }
 
   return (
@@ -163,8 +164,15 @@ function App() {
               <Button onClick={()=>{setOpenModal(false)}}>确定</Button>
             }
             open={openModal}
+            onCancel={()=>{setOpenModal(false)}}
           >
-            <div>
+            <div style={{height: '20px'}}></div>
+            <div 
+              style={{
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }}
+            >
               {modalContent.split('\n').map((line, index) => (
                 <p key={index}>{line}</p>
               ))}
