@@ -62,7 +62,7 @@ function App() {
       }).catch(err => {
         console.log(err);
       });
-    }, 2000);
+    }, 1000);
 
     return () => {
       // 组件销毁时清除定时器
@@ -98,9 +98,9 @@ function App() {
     }).catch(err => {
       console.log(err);
     });
-    setTotalRequestNums(1000);
-    setUsingThreadsNums(5);
-    setTimeConstraint(2);
+    setTotalRequestNums(5000);
+    setUsingThreadsNums(10);
+    setTimeConstraint(5);
   }
 
   // 单次测试目标
@@ -169,7 +169,7 @@ function App() {
             <div style={{height: '20px'}}></div>
             <div 
               style={{
-                maxHeight: '700px',
+                maxHeight: '600px',
                 overflowY: 'auto',
               }}
             >

@@ -1,6 +1,9 @@
 import React from 'react';
-import { List, Tag, Progress, Tooltip, Empty, Button } from 'antd';
+import { List, Tag, Progress, Tooltip, Empty, Button, message as messageApi } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  switchDeviceAll,
+} from '../service/service'
 
 const DeviceList = ({ data = [], deviceNums = 0, message = '' }) => {
   if (deviceNums === 0 || data.length === 0) {
@@ -8,12 +11,29 @@ const DeviceList = ({ data = [], deviceNums = 0, message = '' }) => {
   }
 
   const handleClickStart = (id) => {
-    console.log('start', id);
+    switchDeviceAll(true, id).then(res => {
+      messageApi.success('操作成功');
+    }).catch(err => {
+      messageApi.error('操作失败');
+      console.log('操作失败：', err);
+    });
   }
 
   const handleClickStop = (id) => {
-    console.log('stop', id);
+    switchDeviceAll(false, id).then(res => {
+      messageApi.success('操作成功');
+    }).catch(err => {
+      messageApi.error('操作失败');
+      console.log('操作失败：', err);
+    });
   }
+
+  // 渐变色定义
+  const conicColors = {
+    '0%': '#87d068',
+    '50%': '#ffe58f',
+    '100%': '#ff0000',
+  };
 
   return (
     <List
@@ -51,6 +71,11 @@ const DeviceList = ({ data = [], deviceNums = 0, message = '' }) => {
                     width={50}
                   />
                 </span>
+                <span>
+                  CPU负载：
+                  <Progress type="dashboard" percent={device.total_cpu} strokeColor={conicColors} size={'small'} />
+                </span>
+                <div style={{height: '40px', width: '5px', backgroundColor: 'gray', borderRadius: '10px', opacity: '0.1'}}> </div>
                 <span>平均延迟：{device.avg_delay} ms</span>
               </div>
             }
