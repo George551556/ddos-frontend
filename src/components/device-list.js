@@ -64,12 +64,15 @@ const DeviceList = ({ data = [], deviceNums = 0, message = '' }) => {
                   {device.is_working ? '工作中' : '已停止'}
                 </Tag>
                 <span>
-                  完成度：
-                  <Progress
-                    type="circle"
-                    percent={device.finish_rate}
-                    width={50}
-                  />
+                  进度：
+                  <Tooltip title={`超时率:${device.timeout_rate}% 完成率:${device.finish_rate}%`}>
+                    <Progress
+                      type="circle"
+                      percent={device.finish_rate + device.timeout_rate}
+                      success={{percent: device.finish_rate}}
+                      width={55}
+                    />
+                  </Tooltip>
                 </span>
                 <span>
                   CPU负载：

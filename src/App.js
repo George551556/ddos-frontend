@@ -108,7 +108,7 @@ function App() {
     setSingleBtnLoading(true);
     singleAttack(requestBashText).then(res => {
       // 打开一个全局提示框显示响应内容
-      setModalContent('单次测试结果\n状 态 码: ' + res.data.status_code + '\n响应时间: ' + res.data.delay_time + ' ms\n响应内容: \n' + res.data.resp_body)
+      setModalContent('单次测试结果|^|状 态 码: ' + res.data.status_code + '|^|响应时间: ' + res.data.delay_time + ' ms|^|响应内容: |^|' + res.data.resp_body)
       setOpenModal(true);
       setSingleBtnLoading(false);
     }).catch(err => {
@@ -167,15 +167,14 @@ function App() {
             onCancel={()=>{setOpenModal(false)}}
           >
             <div style={{height: '20px'}}></div>
-            <div 
-              style={{
-                maxHeight: '600px',
-                overflowY: 'auto',
-              }}
-            >
-              {modalContent.split('\n').map((line, index) => (
-                <p key={index}>{line}</p>
-              ))}
+            <div>
+              {modalContent.split('|^|').map((line, index) => {
+                if (index===4){
+                  return <div key={index} style={{maxHeight: '520px', overflowY: 'auto'}}>{line}</div>
+                }else{
+                  return <p key={index}>{line}</p>
+                }
+              })}
             </div>
           </Modal>
       </div>
