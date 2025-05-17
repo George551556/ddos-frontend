@@ -11,9 +11,10 @@ import {
   switchDeviceAll,
   getDefaultRequestBashText,
   singleAttack,
+  getNewestRequestInfo,
 } from './service/service';
 import { Input, Button, Select, Space, message, Modal, Col, Row, Spin, } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, DatabaseOutlined, ReloadOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 function App() {
@@ -44,11 +45,7 @@ function App() {
       console.log(err);
     });
 
-    getDefaultRequestBashText().then(res => {
-      setRequestBashText(res.data.data);
-    }).catch(err => {
-      console.log(err);
-    });
+    handleBtnReset(); // 初次加载表单内容
 
     const timer = setInterval(() => {
       queryServerClock().then(res => {
@@ -96,15 +93,16 @@ function App() {
   }
 
   // 重置表单
-  const handleBtnClear = () => {
-    // setRequestBashText('');
-    getDefaultRequestBashText().then(res => {
-      setRequestBashText(res.data.data);
+  const handleBtnReset = () => {
+    getNewestRequestInfo().then(res => {
+      setRequestBashAbstract(res.data.data.Abstract);
+      setRequestBashText(res.data.data.BashText);
     }).catch(err => {
       console.log(err);
     });
+
     setTotalRequestNums(5000);
-    setUsingThreadsNums(10);
+    setUsingThreadsNums(20);
     setTimeConstraint(5);
   }
 
@@ -148,8 +146,8 @@ function App() {
                 <Input prefix='时间限制: ' value={timeConstraint} onChange={(e) => {setTimeConstraint(e.target.value)}} suffix='分钟' type='number' />
                 <Space direction='horizontal'>
                   <Button type='primary' onClick={handleStartTaskAll} >提交</Button>
-                  <Button onClick={handleBtnClear} >重置</Button>
-                  <Button onClick={()=>{setshowHorizonScroller(true)}}>查看历史</Button>
+                  <Button onClick={handleBtnReset} icon={<ReloadOutlined />} >加载</Button>
+                  <Button onClick={()=>{setshowHorizonScroller(true)}} icon={<DatabaseOutlined />}>查看历史</Button>
                   <Button onClick={handleSingleAttack} loading={singleBtnLoading} style={{backgroundColor: '#5f8'}}>单次访问测试</Button>
                 </Space>
 
@@ -203,14 +201,14 @@ function App() {
               <div
                 style={{
                   width: '90%',
-                  height: '70vh',
+                  height: '71vh',
                   backgroundColor: 'transparent',
                   padding: '20px',
                   borderRadius: '10px'
                 }}
                 onClick={(e) => e.stopPropagation()} // 阻止事件冒泡，不关闭
               >
-                <HorizontalScroller/>
+                <HorizontalScroller props={[setshowHorizonScroller, setRequestBashAbstract, setRequestBashText]}/>
               </div>
             </div>
           )}

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, Spin, message, Input } from 'antd';
+import { Card, Spin, message, Input, Button } from 'antd';
 import { getPaginatedRecords } from '../service/service';
 import './this.css';
 
 const { TextArea } = Input;
 
-function HorizontalScroller() {
+function HorizontalScroller({ props }) {
+  const [setshowHorizonScroller, setRequestBashAbstract, setRequestBashText] = props;
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -58,6 +59,12 @@ function HorizontalScroller() {
     }
   };
 
+  const handleClickCard = (abstract, bashText) => {
+    setRequestBashAbstract(abstract);
+    setRequestBashText(bashText);
+    setshowHorizonScroller(false);
+  };
+
   return (
     <div
       ref={scrollRef}
@@ -82,6 +89,7 @@ function HorizontalScroller() {
           }}
         >
           <Card title={item.Abstract} style={{height: '100%'}}>
+            <Button onClick={()=>{handleClickCard(item.Abstract, item.BashText)}} style={{position:'absolute', zIndex:'1001', top:1, left:1}} type='primary'>应用</Button>
             <TextArea rows={22} value={item.BashText} />
           </Card>
         </div>

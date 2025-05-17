@@ -35,6 +35,10 @@ export const getDefaultRequestBashText = async () => {
     return await axios.get('/front/getDefaultRequestBashText');
 }
 
+export const getNewestRequestInfo = async () => {
+    return await axios.get('/front/getNewestRequestInfo');
+}
+
 export const singleAttack = async (reqBashText) => {
     return await axios.post('/front/singleAttack', {
         request_bash_text: reqBashText
