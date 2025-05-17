@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import DeviceList from './components/device-list';
+import HorizontalScroller from './components/bash-text-list';
 import {
   Ping,
   queryServerClock,
@@ -9,7 +10,6 @@ import {
   startTaskAll,
   switchDeviceAll,
   getDefaultRequestBashText,
-  request_bash_text,
   singleAttack,
 } from './service/service';
 import { Input, Button, Select, Space, message, Modal, Col, Row, Spin, } from 'antd';
@@ -21,14 +21,19 @@ function App() {
   const [connected, setConnected] = useState(false); // 是否能访问后端服务
   const [devices, setDevices] = useState([]);
   const [deviceNums, setDeviceNums] = useState(0);
+  const [requestBashAbstract, setRequestBashAbstract] = useState('');
   const [requestBashText, setRequestBashText] = useState('');
   const [totalRequestNums, setTotalRequestNums] = useState(5000);
   const [usingThreadsNums, setUsingThreadsNums] = useState(10);
   const [timeConstraint, setTimeConstraint] = useState(5);
 
+  // 单次攻击模态框控制
   const [singleBtnLoading, setSingleBtnLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [modalContent, setModalContent] = useState('');
+
+  // 横向滚动控制
+  const [showHorizonScroller, setshowHorizonScroller] = useState(false);
   
 
   // 页面加载后获取数据等操作
@@ -72,7 +77,7 @@ function App() {
 
   // 顶部启停按钮
   const handleSwitchDevicaAll = (isWorking) => {
-    switchDeviceAll(isWorking, '').then(res => {
+    switchDeviceAll(isWorking, '').then(_ => {
       message.success('操作成功');
     }).catch(err => {
       message.error('操作失败');
@@ -82,7 +87,7 @@ function App() {
 
   // 提交表单
   const handleStartTaskAll = () => {
-    startTaskAll(requestBashText, totalRequestNums, usingThreadsNums, timeConstraint).then(res => {
+    startTaskAll(requestBashAbstract, requestBashText, totalRequestNums, usingThreadsNums, timeConstraint).then(res => {
       message.success('请求发送成功');
     }).catch(err => {
       message.error('请求发送失败');
@@ -136,6 +141,7 @@ function App() {
             <Col span={1}></Col>
             <Col span={9} style={{}}>
               <div className='Left_bottom_container'>
+                <Input prefix='摘要: ' value={requestBashAbstract} onChange={(e) =>{setRequestBashAbstract(e.target.value)}}></Input>
                 <TextArea rows={18} placeholder='request url and body (bash)' value={requestBashText} onChange={(e) => {setRequestBashText(e.target.value)}} allowClear />
                 <Input prefix='总请求数量: ' value={totalRequestNums} onChange={(e) => {setTotalRequestNums(e.target.value)}} type='number' />
                 <Input prefix='并发请求数: ' value={usingThreadsNums} onChange={(e) => {setUsingThreadsNums(e.target.value)}} type='number' />
@@ -143,6 +149,7 @@ function App() {
                 <Space direction='horizontal'>
                   <Button type='primary' onClick={handleStartTaskAll} >提交</Button>
                   <Button onClick={handleBtnClear} >重置</Button>
+                  <Button onClick={()=>{setshowHorizonScroller(true)}}>查看历史</Button>
                   <Button onClick={handleSingleAttack} loading={singleBtnLoading} style={{backgroundColor: '#5f8'}}>单次访问测试</Button>
                 </Space>
 
@@ -177,6 +184,36 @@ function App() {
               })}
             </div>
           </Modal>
+
+          {/* 横向历史数据内容 */}
+          {showHorizonScroller && (
+            <div
+              style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                zIndex: 1000,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '40px'
+              }}
+              onClick={() => setshowHorizonScroller(false)}
+            >
+              <div
+                style={{
+                  width: '90%',
+                  height: '70vh',
+                  backgroundColor: 'transparent',
+                  padding: '20px',
+                  borderRadius: '10px'
+                }}
+                onClick={(e) => e.stopPropagation()} // 阻止事件冒泡，不关闭
+              >
+                <HorizontalScroller/>
+              </div>
+            </div>
+          )}
       </div>
     </Router>
   );

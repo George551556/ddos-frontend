@@ -1,0 +1,4 @@
+/* 通用隐藏滚动条样式 */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* 针对Chrome、Safari和Opera */
+}

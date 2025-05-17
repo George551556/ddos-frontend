@@ -13,8 +13,9 @@ export const queryDevices = async () => {
     return await axios.get('/front/queryDevices');
 }
 
-export const startTaskAll = async (requestBashText, totalRequestNums, usingThreadsNums, timeConstraint) => {
+export const startTaskAll = async (requestBashAbstract, requestBashText, totalRequestNums, usingThreadsNums, timeConstraint) => {
     return await axios.post('/front/startTaskAll', {
+        request_bash_abstract: requestBashAbstract,
         request_bash_text: requestBashText,
         enable_random_params: [],
         total_request_nums: Number(totalRequestNums),
@@ -38,4 +39,13 @@ export const singleAttack = async (reqBashText) => {
     return await axios.post('/front/singleAttack', {
         request_bash_text: reqBashText
     })
+}
+
+export const getPaginatedRecords = async (page, size) => {
+    return await axios.get('/front/getPaginatedRecords', {
+        params: {
+            page: page,
+            size: size
+        }
+    });
 }
