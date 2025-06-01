@@ -12,6 +12,7 @@ function HorizontalScroller({ props }) {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const scrollTimeoutRef = useRef(null);
 
   useEffect(() =>{
     const el = scrollRef.current;
@@ -37,7 +38,6 @@ function HorizontalScroller({ props }) {
     try {
       const res = await getPaginatedRecords(pageNum, 4); // 每页4项
       const newData = res.data.data;
-    //   console.log('newdat: ', newData);
       setData(prev => [...prev, ...newData]);
       if (newData.total_nums < 4) setHasMore(false); // 没有更多了
     } catch (err) {
@@ -49,14 +49,16 @@ function HorizontalScroller({ props }) {
 
   // 处理滚动事件
   const handleScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
-      // 滚动到接近最右边
-      if (hasMore) {
+    if (scrollTimeoutRef.current) return;
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10 && hasMore) {
         setPage(p => p + 1);
       }
-    }
+      scrollTimeoutRef.current = null;
+    }, 200); // 节流时间可以调整
   };
 
   const handleClickCard = (abstract, bashText) => {
