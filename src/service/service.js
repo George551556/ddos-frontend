@@ -13,10 +13,11 @@ export const queryDevices = async () => {
     return await axios.get('/front/queryDevices');
 }
 
-export const startTaskAll = async (requestBashAbstract, requestBashText, totalRequestNums, usingThreadsNums, timeConstraint) => {
+export const startTaskAll = async (requestBashAbstract, requestBashText, randomList, totalRequestNums, usingThreadsNums, timeConstraint) => {
     return await axios.post('/front/startTaskAll', {
         request_bash_abstract: requestBashAbstract,
         request_bash_text: requestBashText,
+        random_list: randomList,
         enable_random_params: [],
         total_request_nums: Number(totalRequestNums),
         using_threads_nums: Number(usingThreadsNums),

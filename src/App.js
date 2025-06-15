@@ -13,7 +13,7 @@ import {
   singleAttack,
   getNewestRequestInfo,
 } from './service/service';
-import { Input, Button, Select, Space, message, Modal, Col, Row, Spin, } from 'antd';
+import { Input, Button, Select, Space, message, Modal, Col, Row, Spin, Switch, Tag } from 'antd';
 import { ClockCircleOutlined, DatabaseOutlined, ReloadOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
@@ -35,6 +35,11 @@ function App() {
 
   // 横向滚动控制
   const [showHorizonScroller, setshowHorizonScroller] = useState(false);
+
+  // 参数随机化控制
+  const [randomEnable, setRandomEnable] = useState(false);
+  const [randomInput, setRandomInput] = useState('');
+  const [randomList, setRandomList] = useState([]); // 随机参数列表，格式：ergerjg, 235235235, name=karen 后端需主动判断是否有等号，这样避免同样的参数识别
   
 
   // 页面加载后获取数据等操作
@@ -84,7 +89,12 @@ function App() {
 
   // 提交表单
   const handleStartTaskAll = () => {
-    startTaskAll(requestBashAbstract, requestBashText, totalRequestNums, usingThreadsNums, timeConstraint).then(res => {
+    var tempRandomList = randomList;
+    if (randomEnable === false) { // 如果禁用随机，则随机参数列表置空
+      tempRandomList = [];
+    }
+
+    startTaskAll(requestBashAbstract, requestBashText, tempRandomList, totalRequestNums, usingThreadsNums, timeConstraint).then(res => {
       message.success('请求发送成功');
     }).catch(err => {
       message.error('请求发送失败');
@@ -141,6 +151,49 @@ function App() {
               <div className='Left_bottom_container'>
                 <Input prefix='摘要: ' value={requestBashAbstract} onChange={(e) =>{setRequestBashAbstract(e.target.value)}}></Input>
                 <TextArea rows={18} placeholder='request url and body (bash)' value={requestBashText} onChange={(e) => {setRequestBashText(e.target.value)}} allowClear />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>参数随机化</span>
+                  <Switch checked={randomEnable} onChange={(checked) => setRandomEnable(checked)} />
+                </div>
+
+                {randomEnable && (
+                  <>
+                    <Space direction='horizontal' style={{width: '100%'}}>
+                      <Input
+                        placeholder="请输入需要随机化的规则（如 name=Jack 或者 直接参数值）"
+                        value={randomInput}
+                        onChange={(e) => setRandomInput(e.target.value)}
+                        style={{
+                          width: '430px'
+                        }}
+                      />
+                      <Button
+                        type="dashed"
+                        onClick={() => {
+                          if (randomInput.trim() !== '') {
+                            setRandomList([...randomList, randomInput.trim()]);
+                            setRandomInput('');
+                          }
+                        }}
+                      >
+                        添加规则
+                      </Button>
+                    </Space>
+                    <div>
+                      {randomList.map((item, id) => (
+                        <Tag
+                          key={id}
+                          closable
+                          onClose={() => {
+                            setRandomList(randomList.filter((_, i) => i !== id));
+                          }}
+                        >
+                          {item}
+                        </Tag>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <Input prefix='总请求数量: ' value={totalRequestNums} onChange={(e) => {setTotalRequestNums(e.target.value)}} type='number' />
                 <Input prefix='并发请求数: ' value={usingThreadsNums} onChange={(e) => {setUsingThreadsNums(e.target.value)}} type='number' />
                 <Input prefix='时间限制: ' value={timeConstraint} onChange={(e) => {setTimeConstraint(e.target.value)}} suffix='分钟' type='number' />
